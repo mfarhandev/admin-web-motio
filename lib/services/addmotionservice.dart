@@ -14,6 +14,9 @@ class AddMotionService extends GetxController {
   bool loading = false;
 
   final TextEditingController titileController = TextEditingController();
+  final TextEditingController header1Controller = TextEditingController();
+  final TextEditingController header2Controller = TextEditingController();
+  final TextEditingController header3Controller = TextEditingController();
   final TextEditingController equipementController = TextEditingController();
   final TextEditingController StartingpositionController = TextEditingController();
   final TextEditingController ExerciseDescriptionController = TextEditingController();
@@ -59,6 +62,9 @@ class AddMotionService extends GetxController {
           .doc(docRef.id)
           .set({
         'title': titileController.text,
+        'header1': header1Controller.text,
+        'header2': header2Controller.text,
+        'header3': header3Controller.text,
         'equipmentsNeeded': equipementController.text,
         'starting_position': StartingpositionController.text,
         'exercise_description': ExerciseDescriptionController.text,
@@ -70,6 +76,9 @@ class AddMotionService extends GetxController {
       update();
       videoFile = null;
       titileController.clear();
+      header1Controller.clear();
+      header2Controller.clear();
+      header3Controller.clear();
       equipementController.clear();
       StartingpositionController.clear();
       ExerciseDescriptionController.clear();

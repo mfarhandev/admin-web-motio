@@ -266,54 +266,39 @@ class _AddexErcisesScreenState extends State<AddexErcisesScreen> {
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(
-                                                exercise['exercise'] ?? 'No Exercise Name',
-                                                style: TextStyle(
-                                                  color: Colors.blue,
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                maxLines: 2,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                              GetBuilder<AddExercisesServices>(
-                                                builder: (logic) {
-                                                  return logic.loading1 == true
-                                                      ? SpinKitFadingCircle(size: 20, color: Colors.blue)
-                                                      : GestureDetector(
-                                                    onTap: () async {
-                                                      if (docId.isNotEmpty) {
-                                                        await addexercisesservice.deleteExercise(docId);
-                                                        setState(() {});
-                                                      } else {
-                                                        Get.snackbar(
-                                                          "Error",
-                                                          "Document ID is null or empty",
-                                                          snackPosition: SnackPosition.TOP,
-                                                          backgroundColor: Colors.red,
-                                                          colorText: Colors.white,
-                                                        );
-                                                      }
-                                                    },
-                                                    child: Icon(Icons.delete, color: Colors.red, size: 20),
-                                                  );
-                                                },
-                                              ),
-
-                                            ],
-                                          ),
-                                          SizedBox(height: 10,),
-                                          Text(
-                                            exercise['description'] ?? 'No Description',
-                                            style: TextStyle(fontSize: 12),
-                                            maxLines: 3,
-                                            textAlign: TextAlign.justify,
-                                            overflow: TextOverflow.ellipsis,
+                                          AppText.heading(exercise['exercise'] ?? 'No Exercise Name', fontsize: 16),
+                                          Padding(
+                                            padding: const EdgeInsets.only(right: 20),
+                                            child: AppText.normal(exercise['description'] ?? 'No Description', fontsize: 16,maxline: 2),
                                           ),
                                         ],
+                                      ),
+                                    ),
+                                    SizedBox(width: 10),
+                                    Padding(
+                                      padding: const EdgeInsets.only(bottom: 30),
+                                      child:  GetBuilder<AddExercisesServices>(
+                                        builder: (logic) {
+                                          return logic.loading1 == true
+                                              ? SpinKitFadingCircle(size: 20, color: Colors.blue)
+                                              : GestureDetector(
+                                            onTap: () async {
+                                              if (docId.isNotEmpty) {
+                                                await addexercisesservice.deleteExercise(docId);
+                                                setState(() {});
+                                              } else {
+                                                Get.snackbar(
+                                                  "Error",
+                                                  "Document ID is null or empty",
+                                                  snackPosition: SnackPosition.TOP,
+                                                  backgroundColor: Colors.red,
+                                                  colorText: Colors.white,
+                                                );
+                                              }
+                                            },
+                                            child: Icon(Icons.delete, color: Colors.red, size: 20),
+                                          );
+                                        },
                                       ),
                                     ),
                                     SizedBox(width: 10),

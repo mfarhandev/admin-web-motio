@@ -202,6 +202,7 @@ class _AddMotionsScreenState extends State<AddMotionsScreen> {
                       )
                   ),
                   SizedBox(height: 10),
+
                   Container(
                     width: screenWidth * 0.30,
                     child: TextField(
@@ -238,14 +239,15 @@ class _AddMotionsScreenState extends State<AddMotionsScreen> {
                           )),
                     ),
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(height: 20),
+
                   Container(
                     width: screenWidth * 0.30,
                     child: TextField(
-                     // enabled: onboardingfirebase.check == true ? false : true,
-                      maxLines: 3,
+                      //  enabled: onboardingfirebase.check == true ? false : true,
+                      maxLines: 1,
                       cursorColor: Colors.blue,
-                      controller: addMotionService.equipementController,
+                      controller: addMotionService.header1Controller,
                       style: TextStyle(fontFamily: "PTSerif", color: Colors.black),
                       decoration: InputDecoration(
                           contentPadding:
@@ -279,10 +281,48 @@ class _AddMotionsScreenState extends State<AddMotionsScreen> {
                   Container(
                     width: screenWidth * 0.30,
                     child: TextField(
-                      // enabled: onboardingfirebase.check == true ? false : true,
+                     // enabled: onboardingfirebase.check == true ? false : true,
                       maxLines: 3,
                       cursorColor: Colors.blue,
-                        controller: addMotionService.StartingpositionController,
+                      controller: addMotionService.equipementController,
+                      style: TextStyle(fontFamily: "PTSerif", color: Colors.black),
+                      decoration: InputDecoration(
+                          contentPadding:
+                          EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+                          hintText: 'Description',
+                          hintStyle: TextStyle(
+                            fontFamily: "PTSerif",
+                            color: Colors.black.withOpacity(0.4),
+                          ),
+                          fillColor: Colors.white24,
+                          filled: true,
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(color: btncolor, width: 2),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: btncolor, width: 2),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: btncolor, width: 2),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          disabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: btncolor, width: 2),
+                            borderRadius: BorderRadius.circular(10),
+                          )),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+
+                  Container(
+                    width: screenWidth * 0.30,
+                    child: TextField(
+                      //  enabled: onboardingfirebase.check == true ? false : true,
+                      maxLines: 1,
+                      cursorColor: Colors.blue,
+                      controller: addMotionService.header2Controller,
                       style: TextStyle(fontFamily: "PTSerif", color: Colors.black),
                       decoration: InputDecoration(
                           contentPadding:
@@ -319,7 +359,45 @@ class _AddMotionsScreenState extends State<AddMotionsScreen> {
                       // enabled: onboardingfirebase.check == true ? false : true,
                       maxLines: 3,
                       cursorColor: Colors.blue,
-                     controller: addMotionService.ExerciseDescriptionController,
+                        controller: addMotionService.StartingpositionController,
+                      style: TextStyle(fontFamily: "PTSerif", color: Colors.black),
+                      decoration: InputDecoration(
+                          contentPadding:
+                          EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+                          hintText: 'Description',
+                          hintStyle: TextStyle(
+                            fontFamily: "PTSerif",
+                            color: Colors.black.withOpacity(0.4),
+                          ),
+                          fillColor: Colors.white24,
+                          filled: true,
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(color: btncolor, width: 2),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: btncolor, width: 2),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: btncolor, width: 2),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          disabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: btncolor, width: 2),
+                            borderRadius: BorderRadius.circular(10),
+                          )),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+
+                  Container(
+                    width: screenWidth * 0.30,
+                    child: TextField(
+                      //  enabled: onboardingfirebase.check == true ? false : true,
+                      maxLines: 1,
+                      cursorColor: Colors.blue,
+                      controller: addMotionService.header3Controller,
                       style: TextStyle(fontFamily: "PTSerif", color: Colors.black),
                       decoration: InputDecoration(
                           contentPadding:
@@ -349,6 +427,44 @@ class _AddMotionsScreenState extends State<AddMotionsScreen> {
                           )),
                     ),
                   ),
+                  SizedBox(height: 10),
+                  Container(
+                    width: screenWidth * 0.30,
+                    child: TextField(
+                      // enabled: onboardingfirebase.check == true ? false : true,
+                      maxLines: 3,
+                      cursorColor: Colors.blue,
+                     controller: addMotionService.ExerciseDescriptionController,
+                      style: TextStyle(fontFamily: "PTSerif", color: Colors.black),
+                      decoration: InputDecoration(
+                          contentPadding:
+                          EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+                          hintText: 'Description',
+                          hintStyle: TextStyle(
+                            fontFamily: "PTSerif",
+                            color: Colors.black.withOpacity(0.4),
+                          ),
+                          fillColor: Colors.white24,
+                          filled: true,
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(color: btncolor, width: 2),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: btncolor, width: 2),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: btncolor, width: 2),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          disabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: btncolor, width: 2),
+                            borderRadius: BorderRadius.circular(10),
+                          )),
+                    ),
+                  ),
+
                   SizedBox(height: 20),
                   GetBuilder<AddMotionService>(builder: (logic) {
                     return logic.loading == true
@@ -453,12 +569,20 @@ class _AddMotionsScreenState extends State<AddMotionsScreen> {
                                     ),
                                   ],
                                 ),
-                                SizedBox(height: 10),
-                                AppText.normal(motion['equipmentsNeeded'] ?? 'No Equipments Needed'),
-                                SizedBox(height: 10),
-                                AppText.normal(motion['starting_position'] ?? 'No Starting Position'),
-                                SizedBox(height: 10),
-                                AppText.normal(motion['exercise_description'] ?? 'No Exercise Description'),
+                               Padding(
+                                 padding: const EdgeInsets.only(right: 30),
+                                 child: Column(
+                                   crossAxisAlignment: CrossAxisAlignment.start,
+                                   children: [
+                                     SizedBox(height: 10),
+                                     AppText.normal(motion['equipmentsNeeded'] ?? 'No Equipments Needed'),
+                                     SizedBox(height: 10),
+                                     AppText.normal(motion['starting_position'] ?? 'No Starting Position'),
+                                     SizedBox(height: 10),
+                                     AppText.normal(motion['exercise_description'] ?? 'No Exercise Description'),
+                                   ],
+                                 ),
+                               )
                               ],
                             ),
                           );

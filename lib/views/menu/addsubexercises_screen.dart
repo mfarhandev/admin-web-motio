@@ -20,6 +20,7 @@ class _AddSubexercisesScreenState extends State<AddSubexercisesScreen> {
   List<Map<String, dynamic>> exercises = [];
   String? selectedExercise;
   final TextEditingController reasonController = TextEditingController();
+  final TextEditingController reasondescriptionController = TextEditingController();
 
   @override
   void initState() {
@@ -46,24 +47,62 @@ class _AddSubexercisesScreenState extends State<AddSubexercisesScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(height: 30),
+                Flexible(
+                  child: Container(
+                    width: screenWidth * 0.30, // Adjust the width as needed
+                    child: DropdownButtonFormField<String>(
+                      value: selectedExercise,
+                      hint: Text('Select Exercise'),
+                      items: exercises.map((exercise) {
+                        return DropdownMenuItem<String>(
+                          value: exercise['docId'],
+                          child: Text(exercise['exercise'] ?? 'No Exercise Name'),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedExercise = value;
+                        });
+                      },
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+                        fillColor: Colors.white24,
+                        filled: true,
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(color: btncolor, width: 2),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: btncolor, width: 2),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: btncolor, width: 2),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        disabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: btncolor, width: 2),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
                 Container(
                   width: screenWidth * 0.30,
-                  child: DropdownButtonFormField<String>(
-                    value: selectedExercise,
-                    hint: Text('Select Exercise'),
-                    items: exercises.map((exercise) {
-                      return DropdownMenuItem<String>(
-                        value: exercise['docId'],
-                        child: Text(exercise['exercise'] ?? 'No Exercise Name'),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        selectedExercise = value;
-                      });
-                    },
+                  child: TextField(
+                    controller: reasonController,
+                    maxLines: 2,
+                    cursorColor: Colors.blue,
+                    style: TextStyle(fontFamily: "PTSerif", color: Colors.black),
                     decoration: InputDecoration(
                       contentPadding: EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+                      hintText: 'Reason',
+                      hintStyle: TextStyle(
+                        fontFamily: "PTSerif",
+                        color: Colors.black.withOpacity(0.4),
+                      ),
                       fillColor: Colors.white24,
                       filled: true,
                       border: OutlineInputBorder(
@@ -89,13 +128,13 @@ class _AddSubexercisesScreenState extends State<AddSubexercisesScreen> {
                 Container(
                   width: screenWidth * 0.30,
                   child: TextField(
-                    controller: reasonController,
-                    maxLines: 3,
+                    controller: reasondescriptionController,
+                    maxLines: 4,
                     cursorColor: Colors.blue,
                     style: TextStyle(fontFamily: "PTSerif", color: Colors.black),
                     decoration: InputDecoration(
                       contentPadding: EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-                      hintText: 'Reason',
+                      hintText: 'Description',
                       hintStyle: TextStyle(
                         fontFamily: "PTSerif",
                         color: Colors.black.withOpacity(0.4),
@@ -136,9 +175,10 @@ class _AddSubexercisesScreenState extends State<AddSubexercisesScreen> {
                         buttonWidth: screenWidth * 0.30,
                         onPressed: () async {
                           if (selectedExercise != null && reasonController.text.isNotEmpty) {
-                            await addSubExercisesServies.addReasonToExercise(selectedExercise!, reasonController.text);
+                            await addSubExercisesServies.addReasonToExercise(selectedExercise!, reasonController.text,reasondescriptionController.text);
                             setState(() {
                               reasonController.clear();
+                              reasondescriptionController.clear();
                             });
                           } else {
                             Get.snackbar(
@@ -181,7 +221,9 @@ class _AddSubexercisesScreenState extends State<AddSubexercisesScreen> {
                         itemCount: reasons.length,
                         itemBuilder: (context, index) {
                           final reason = reasons[index]['reason'] ?? 'No Reason';
+                          final description = reasons[index]['description'] ?? 'No Description';
                           final reasonId = reasons[index]['id'];
+
                           return Container(
                             key: ValueKey(reasonId),
                             margin: EdgeInsets.only(bottom: 10),
@@ -194,7 +236,18 @@ class _AddSubexercisesScreenState extends State<AddSubexercisesScreen> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                AppText.heading(reason, fontsize: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      AppText.heading(reason, fontsize: 16),
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 20),
+                                        child: AppText.normal(description, fontsize: 16),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                                 Padding(
                                   padding: const EdgeInsets.only(bottom: 30),
                                   child: IconButton(
