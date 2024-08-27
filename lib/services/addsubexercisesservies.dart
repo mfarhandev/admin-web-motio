@@ -7,7 +7,7 @@ class AddSubExercisesServies extends GetxController {
 
   bool loading = false;
 
-  Future<void> addReasonToExercise(String docId, String reason) async {
+  Future<void> addReasonToExercise(String docId, String reason,String description) async {
     loading = true;
     update();
 
@@ -32,6 +32,7 @@ class AddSubExercisesServies extends GetxController {
           .collection('reasons')
           .add({
         'reason': reason,
+        'description': description,
         'index': newIndex,
       });
 
@@ -70,6 +71,7 @@ class AddSubExercisesServies extends GetxController {
       return querySnapshot.docs.map((doc) => {
         'id': doc.id,
         'reason': doc.data()['reason'],
+        'description': doc.data()['description'],
         'index': doc.data()['index']
       }).toList();
     } catch (e) {
