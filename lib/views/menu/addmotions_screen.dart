@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -25,6 +27,7 @@ class _AddMotionsScreenState extends State<AddMotionsScreen> {
   List<Map<String, dynamic>> reasons = [];
   String? selectedExercise;
   String? selectedReason;
+  String? selectedDocId;
 
 
 
@@ -154,7 +157,7 @@ class _AddMotionsScreenState extends State<AddMotionsScreen> {
                   ),
                   SizedBox(height: 20),
                   GestureDetector(
-                      onTap: addMotionService.check == true ? () {} : pickVideo,
+                      onTap: addMotionService.check == true && addMotionService.check1 == false  ? () {} : pickVideo,
                       child: addMotionService.check == false && addMotionService.videoFile == null
                           ? Container(
                         height: 150,
@@ -486,7 +489,8 @@ class _AddMotionsScreenState extends State<AddMotionsScreen> {
                             addMotionService.equipementController.text.isEmpty ||
                             addMotionService.StartingpositionController.text.isEmpty ||
                             addMotionService.ExerciseDescriptionController.text.isEmpty
-                        ) {
+                        )
+                        {
                           Get.snackbar(
                             "Error",
                             "Fill all the fields",
@@ -494,19 +498,36 @@ class _AddMotionsScreenState extends State<AddMotionsScreen> {
                             backgroundColor: Colors.red,
                             colorText: Colors.white,
                           );
-                        } else {
-                          await addMotionService.uploadVideo(
-                              addMotionService.videoFile,
-                              selectedExercise!,
-                              selectedReason!
-                          );
-                          setState(() {
+                        }
+                        else {
 
-                          });
+                          if(selectedDocId != null){
+
+                            await addMotionService.updateMotion(
+                                selectedExercise!,
+                                selectedReason!,
+                                selectedDocId!,
+                                addMotionService.videoFile == Uint8List(0) ? null : addMotionService.videoFile,
+                            );
+                            setState(() {
+
+                            });
+
+                          }else {
+                            await addMotionService.uploadVideo(
+                                addMotionService.videoFile,
+                                selectedExercise!,
+                                selectedReason!,
+
+                            );
+                            setState(() {
+
+                            });
+                          }
 
                         }
                       },
-                      child: AppText.heading("Save",
+                      child: AppText.heading(selectedDocId != null ? "Update" :  "Save",
                           fontsize: 18, color: Colors.white),
                     );
                   })
@@ -553,11 +574,47 @@ class _AddMotionsScreenState extends State<AddMotionsScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
-                                    AppText.heading(motion['title'] ?? 'No Title', fontsize: 18),
-                                    IconButton(
-                                      onPressed: () async {
+                                    GestureDetector(
+                                      onTap: () async {
+                                        setState(() {
+                                          addMotionService.titileController.text = motion['title'];
+                                          addMotionService.header1Controller.text = motion['header1'];
+                                          addMotionService.equipementController.text = motion['equipmentsNeeded'];
+                                          addMotionService.header2Controller.text = motion['header2'];
+                                          addMotionService.StartingpositionController.text = motion['starting_position'];
+                                          addMotionService.header3Controller.text = motion['header3'];
+                                          addMotionService.ExerciseDescriptionController.text = motion['exercise_description'];
+
+                                        });
+                                      },
+                                      child: Icon(Icons.refresh, color: Colors.blue, size: 20),
+                                    ),
+                                    SizedBox(width: 5),
+                                    GestureDetector(
+                                      onTap: () async {
+                                        setState(() {
+                                          addMotionService.check1 = true;
+                                          selectedDocId = motion['id'];
+                                          addMotionService.titileController.text = motion['title'];
+                                          addMotionService.header1Controller.text = motion['header1'];
+                                          addMotionService.equipementController.text = motion['equipmentsNeeded'];
+                                          addMotionService.header2Controller.text = motion['header2'];
+                                          addMotionService.StartingpositionController.text = motion['starting_position'];
+                                          addMotionService.header3Controller.text = motion['header3'];
+                                          addMotionService.ExerciseDescriptionController.text = motion['exercise_description'];
+                                          addMotionService.videoFile =  Uint8List(0);
+
+                                        });
+
+
+                                      },
+                                      child: Icon(Icons.edit, color: Colors.orange, size: 20),
+                                    ),
+                                    SizedBox(width: 5),
+                                    GestureDetector(
+                                      onTap: () async {
                                         await addMotionService.deleteMotion(
                                           selectedExercise!,
                                           selectedReason!,
@@ -565,8 +622,15 @@ class _AddMotionsScreenState extends State<AddMotionsScreen> {
                                         );
                                         setState(() {});
                                       },
-                                      icon: Icon(Icons.delete, color: Colors.red),
+                                      child: Icon(Icons.delete, color: Colors.red, size: 20),
                                     ),
+
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    AppText.heading(motion['title'] ?? 'No Title', fontsize: 18),
                                   ],
                                 ),
                                Padding(
@@ -575,11 +639,11 @@ class _AddMotionsScreenState extends State<AddMotionsScreen> {
                                    crossAxisAlignment: CrossAxisAlignment.start,
                                    children: [
                                      SizedBox(height: 10),
-                                     AppText.normal(motion['equipmentsNeeded'] ?? 'No Equipments Needed'),
+                                     AppText.normal(motion['equipmentsNeeded'] ?? 'No Equipments Needed',maxline: 2),
                                      SizedBox(height: 10),
-                                     AppText.normal(motion['starting_position'] ?? 'No Starting Position'),
+                                     AppText.normal(motion['starting_position'] ?? 'No Starting Position',maxline: 2),
                                      SizedBox(height: 10),
-                                     AppText.normal(motion['exercise_description'] ?? 'No Exercise Description'),
+                                     AppText.normal(motion['exercise_description'] ?? 'No Exercise Description',maxline: 2),
                                    ],
                                  ),
                                )

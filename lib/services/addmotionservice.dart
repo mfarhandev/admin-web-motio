@@ -10,6 +10,7 @@ import 'package:motion_web/utils/globals.dart';
 
 class AddMotionService extends GetxController {
   bool check = false;
+  bool check1 = false;
   Uint8List? videoFile;
   bool loading = false;
 
@@ -117,8 +118,11 @@ class AddMotionService extends GetxController {
       return querySnapshot.docs.map((doc) => {
         'id': doc.id,
         'title': doc['title'],
+        'header1': doc['header1'],
         'equipmentsNeeded': doc['equipmentsNeeded'],
+        'header2': doc['header2'],
         'starting_position': doc['starting_position'],
+        'header3': doc['header3'],
         'exercise_description': doc['exercise_description'],
         'video_url': doc['video_url'],
         'index': doc['index'],
@@ -188,4 +192,69 @@ class AddMotionService extends GetxController {
     }
   }
 
+  Future<void> updateMotion(String exerciseId, String reasonId, String motionId, Uint8List? videoFileeurl) async {
+    loading = true;
+    update();
+
+    try {
+      String? videoUrl;
+      if (videoFileeurl != null && videoFileeurl.isNotEmpty) {
+        final docRef = FirebaseFirestore.instance.collection('motion_videos').doc();
+        File file = await convertBytesToFile(videoFileeurl, 'test');
+        videoUrl = await FirebaseStorageServices().uploadToStorage(
+          file: file,
+          folderName: "motion_exercises/${docRef.id}",
+          contentType: 'video/mp4',
+        );
+      }
+
+      await FirebaseFirestore.instance
+          .collection('All_exercises')
+          .doc(exerciseId)
+          .collection('reasons')
+          .doc(reasonId)
+          .collection('motions')
+          .doc(motionId)
+          .update({
+        'title': titileController.text,
+        'header1': header1Controller.text,
+        'header2': header2Controller.text,
+        'header3': header3Controller.text,
+        'equipmentsNeeded': equipementController.text,
+        'starting_position': StartingpositionController.text,
+        'exercise_description': ExerciseDescriptionController.text,
+        if (videoUrl != null && videoUrl.isNotEmpty) 'video_url': videoUrl,
+      });
+
+      videoFile = null;
+      titileController.clear();
+      header1Controller.clear();
+      header2Controller.clear();
+      header3Controller.clear();
+      equipementController.clear();
+      StartingpositionController.clear();
+      ExerciseDescriptionController.clear();
+      loading = false;
+      update();
+
+      Get.snackbar(
+        "Success",
+        "Motion updated successfully",
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+    } catch (e) {
+      loading = false;
+      update();
+      print('Error updating motion: $e');
+      Get.snackbar(
+        "Error",
+        "Error updating motion",
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
+  }
 }

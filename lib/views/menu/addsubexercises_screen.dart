@@ -21,6 +21,7 @@ class _AddSubexercisesScreenState extends State<AddSubexercisesScreen> {
   String? selectedExercise;
   final TextEditingController reasonController = TextEditingController();
   final TextEditingController reasondescriptionController = TextEditingController();
+  String? selectedDocId;
 
   @override
   void initState() {
@@ -174,13 +175,8 @@ class _AddSubexercisesScreenState extends State<AddSubexercisesScreen> {
                         buttonBackgroundColor: btncolor,
                         buttonWidth: screenWidth * 0.30,
                         onPressed: () async {
-                          if (selectedExercise != null && reasonController.text.isNotEmpty) {
-                            await addSubExercisesServies.addReasonToExercise(selectedExercise!, reasonController.text,reasondescriptionController.text);
-                            setState(() {
-                              reasonController.clear();
-                              reasondescriptionController.clear();
-                            });
-                          } else {
+
+                          if(selectedExercise == null && reasonController.text.isEmpty){
                             Get.snackbar(
                               "Error",
                               "Please select an exercise and enter a reason",
@@ -188,9 +184,34 @@ class _AddSubexercisesScreenState extends State<AddSubexercisesScreen> {
                               backgroundColor: Colors.red,
                               colorText: Colors.white,
                             );
+                          }else {
+
+                            if(selectedDocId != null){
+                              await addSubExercisesServies.updateReasonInExercise(selectedExercise!, selectedDocId!, reasonController.text,reasondescriptionController.text);
+                              setState(() {
+                                selectedDocId = null;
+                                reasonController.clear();
+                                reasondescriptionController.clear();
+                              });
+
+                            }
+
+                            else {
+                              await addSubExercisesServies.addReasonToExercise(selectedExercise!, reasonController.text,reasondescriptionController.text);
+                              setState(() {
+                                reasonController.clear();
+                                reasondescriptionController.clear();
+                              });
+                            }
+
+
+
                           }
+
+
+
                         },
-                        child: AppText.heading("Save", fontsize: 18, color: Colors.white),
+                        child: AppText.heading(selectedDocId != null ?  "Update" : "Save", fontsize: 18, color: Colors.white),
                       );
                     }),
               ],
@@ -233,31 +254,58 @@ class _AddSubexercisesScreenState extends State<AddSubexercisesScreen> {
                               borderRadius: BorderRadius.circular(10),
                               border: Border.all(color: btncolor, width: 2),
                             ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Expanded(
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () async {
+                                        setState(() {
+                                          reasonController.text = reason;
+                                          reasondescriptionController.text = description;
+                                        });
+                                      },
+                                      child: Icon(Icons.refresh, color: Colors.blue, size: 20),
+                                    ),
+                                    SizedBox(width: 5),
+                                    GestureDetector(
+                                      onTap: () async {
+                                        setState(() {
+                                          selectedDocId = reasonId;
+                                          reasonController.text = reason;
+                                          reasondescriptionController.text = description;
+                                        });
+                                      },
+                                      child: Icon(Icons.edit, color: Colors.orange, size: 20),
+                                    ),
+                                    SizedBox(width: 5),
+                                    GestureDetector(
+                                      onTap: () async {
+                                        await addSubExercisesServies.deleteReasonFromExercise(selectedExercise!, reasonId);
+                                        setState(() {});
+                                      },
+                                      child: Icon(Icons.delete, color: Colors.red, size: 20),
+                                    ),
+                                  ],
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 10),
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       AppText.heading(reason, fontsize: 16),
                                       Padding(
                                         padding: const EdgeInsets.only(right: 20),
-                                        child: AppText.normal(description, fontsize: 16),
+                                        child: AppText.normal(description, fontsize: 16,
+                                        maxline: 3
+                                        ),
                                       ),
                                     ],
                                   ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 30),
-                                  child: IconButton(
-                                    icon: Icon(Icons.delete, color: Colors.red),
-                                    onPressed: () async {
-                                      await addSubExercisesServies.deleteReasonFromExercise(selectedExercise!, reasonId);
-                                      setState(() {});
-                                    },
-                                  ),
-                                ),
+
                               ],
                             ),
                           );
