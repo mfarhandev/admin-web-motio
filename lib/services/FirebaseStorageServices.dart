@@ -10,8 +10,10 @@ import 'package:motion_web/utils/globals.dart';
 class FirebaseStorageServices  extends GetxController{
 
   bool loading = false;
+  bool deleteisloading = false;
 
   bool check = false;
+  bool check1 = false;
 
   Uint8List? videoFile;
 
@@ -44,17 +46,19 @@ class FirebaseStorageServices  extends GetxController{
   TextEditingController subHeadingController = TextEditingController();
 
 
-  Future<void> uploadVideo(Uint8List? videoFile) async {
-
+  Future<String?> uploadVideo(Uint8List? videoFile) async {
     loading = true;
     update();
 
-    if (videoFile == null) return;
+    if (videoFile == null) return null;
     try {
       final docRef = FirebaseFirestore.instance.collection('onboarding_videos').doc();
       File file = await convertBytesToFile(videoFile, 'test');
-      final videoUrl = await FirebaseStorageServices().uploadToStorage(file: file,    folderName: "onboarding_videos/${docRef.id}", contentType: 'video/mp4',);
-
+      final videoUrl = await FirebaseStorageServices().uploadToStorage(
+        file: file,
+        folderName: "onboarding_videos/${docRef.id}",
+        contentType: 'video/mp4',
+      );
 
       await FirebaseFirestore.instance.collection('onboarding_videos').doc(docRef.id).set({
         'heading': headingController.text,
@@ -73,6 +77,8 @@ class FirebaseStorageServices  extends GetxController{
         colorText: Colors.white,
       );
 
+      return videoUrl; // Return the video URL here
+
     } catch (e) {
       loading = false;
       update();
@@ -84,12 +90,60 @@ class FirebaseStorageServices  extends GetxController{
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
+      return null; // Return null if an error occurs
+    }
+  }
+
+
+
+  Future<void> updateVideo(String docId, String existingVideoUrl) async {
+    loading = true;
+    update();
+
+    try {
+      String newVideoUrl = existingVideoUrl;
+
+      if (videoFile != null) {
+        // Upload new video file if selected
+        File file = await convertBytesToFile(videoFile!, 'onboarding_video');
+        newVideoUrl = await uploadToStorage(file: file, folderName: "onboarding_videos/$docId", contentType: 'video/mp4',);
+      }
+
+      await FirebaseFirestore.instance.collection('onboarding_videos').doc(docId).update({
+        'heading': headingController.text,
+        'sub_heading': subHeadingController.text,
+        'video_url': newVideoUrl,
+      });
+
+      loading = false;
+      check1 = false;
+      update();
+
+
+      Get.snackbar(
+        "Success",
+        "Video updated successfully",
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+    } catch (e) {
+      loading = false;
+      update();
+      print('Error updating video: $e');
+      Get.snackbar(
+        "Error",
+        "Error updating video",
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 
 
   Future<void> deleteVideo(String docId, String videoUrl) async {
-    loading = true;
+    deleteisloading = true;
     update();
 
     try {
@@ -105,7 +159,7 @@ class FirebaseStorageServices  extends GetxController{
       subHeadingController.clear();
       check = false;
       videoFile = null;
-      loading = false;
+      deleteisloading = false;
       update();
 
       Get.snackbar(
@@ -116,7 +170,7 @@ class FirebaseStorageServices  extends GetxController{
         colorText: Colors.white,
       );
     } catch (e) {
-      loading = false;
+      deleteisloading = false;
       update();
       print('Error deleting video: $e');
       Get.snackbar(
@@ -128,6 +182,8 @@ class FirebaseStorageServices  extends GetxController{
       );
     }
   }
+
+
 
 
 }

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 
@@ -13,6 +14,36 @@ class OnboardingController extends GetxController {
   String videoUrl = '';
 
 
+
+  Future<void> updateOnboardingData({
+    required String docid,
+    required String heading,
+    required String subheading,
+    required String videoUrl,
+  }) async {
+    try {
+      await FirebaseFirestore.instance.collection('onboarding').doc(docid).update({
+        'heading': heading,
+        'subheading': subheading,
+        'videoUrl': videoUrl,
+      });
+      Get.snackbar(
+        "Success",
+        "Onboarding data updated successfully",
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+    } catch (e) {
+      Get.snackbar(
+        "Error",
+        "Failed to update onboarding data",
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
+  }
 
 
   Future<void> fetchOnboardingData() async {

@@ -1,9 +1,13 @@
 import 'dart:developer';
-import 'dart:typed_data';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:html';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'dart:typed_data';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:motion_web/utils/globals.dart';
+
+
 
 class AddExercisesServices extends GetxController {
 
@@ -16,7 +20,12 @@ class AddExercisesServices extends GetxController {
   bool loading = false;
   bool loading1 = false;
 
-  Future<String> uploadToStorage({required Uint8List fileData, required String folderName, String contentType = 'image/png'}) async {
+
+
+
+
+
+  Future<String> uploadToStorageImage({required Uint8List fileData, required String folderName, String contentType = 'image/png'}) async {
     try {
       final Reference firebaseStorageRef = FirebaseStorage.instance.ref().child(
         '$folderName/file${DateTime.now().millisecondsSinceEpoch}.png',
@@ -41,7 +50,8 @@ class AddExercisesServices extends GetxController {
 
 
   Future<void> uploadImage(Uint8List? imageFilee) async {
-    if (imageFilee == null) return;
+    if (imageFilee == null)
+      return;
 
     loading = true;
     update();
@@ -60,7 +70,7 @@ class AddExercisesServices extends GetxController {
       }
 
       final docRef = FirebaseFirestore.instance.collection('All_exercises').doc();
-      final imageUrl = await uploadToStorage(
+      final imageUrl = await uploadToStorageImage(
         fileData: imageFilee,
         folderName: "exercises_images/${docRef.id}",
         contentType: 'image/png',
@@ -120,6 +130,67 @@ class AddExercisesServices extends GetxController {
   }
 
 
+  Future<void> updateExerciseIndex(String docId, int newIndex) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('All_exercises')
+          .doc(docId)
+          .update({'index': newIndex});
+    } catch (e) {
+      log('Error updating exercise index: $e');
+    }
+  }
+
+
+  Future<void> updateExercise(String docId, String exercise, String description, Uint8List? imageFilee) async {
+    try {
+      loading = true;
+      update();
+
+      print('imageFile: $imageFilee');
+
+
+      // Check if the document exists
+      DocumentSnapshot docSnapshot = await FirebaseFirestore.instance.collection('All_exercises').doc(docId).get();
+      if (!docSnapshot.exists) {
+        throw Exception("No document to update");
+      }
+
+      String? imageUrl;
+      if (imageFilee != null && imageFile!.isNotEmpty) {
+
+        imageUrl = await uploadToStorageImage(
+          fileData: imageFilee,
+          folderName: "exercises_images/$docId",
+          contentType: 'image/png',
+        );
+      }
+
+      await FirebaseFirestore.instance.collection('All_exercises').doc(docId).update({
+        'exercise': exercise,
+        'description': description,
+        if (imageUrl != null) 'image_url': imageUrl,
+      });
+
+      loading = false;
+      exerciseController.clear();
+      descriptionController.clear();
+      imageFile = null;
+      update();
+      Get.snackbar("Success", "Exercise updated successfully",
+          snackPosition: SnackPosition.TOP, backgroundColor: Colors.green, colorText: Colors.white);
+    } catch (e) {
+      loading = false;
+      update();
+      print('Error updating exercise: $e');
+      Get.snackbar("Error", "Error updating exercise",
+          snackPosition: SnackPosition.TOP, backgroundColor: Colors.red, colorText: Colors.white);
+    }
+  }
+
+
+
+
   Future<void> deleteExercise(String docId) async {
 
     loading1 = true;
@@ -167,20 +238,6 @@ class AddExercisesServices extends GetxController {
       );
     }
   }
-
-
-  Future<void> updateExerciseIndex(String docId, int newIndex) async {
-    try {
-      await FirebaseFirestore.instance
-          .collection('All_exercises')
-          .doc(docId)
-          .update({'index': newIndex});
-    } catch (e) {
-      log('Error updating exercise index: $e');
-    }
-  }
-
-
 
 
 }

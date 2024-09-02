@@ -138,5 +138,55 @@ class AddSubExercisesServies extends GetxController {
   }
 
 
+  Future<void> updateReasonInExercise(String docId, String reasonId, String reason, String description) async {
+    loading = true;
+    update();
+
+    try {
+      // Check if the document exists
+      DocumentSnapshot docSnapshot = await FirebaseFirestore.instance
+          .collection('All_exercises')
+          .doc(docId)
+          .collection('reasons')
+          .doc(reasonId)
+          .get();
+
+      if (!docSnapshot.exists) {
+        throw Exception("No reason document to update");
+      }
+
+      await FirebaseFirestore.instance
+          .collection('All_exercises')
+          .doc(docId)
+          .collection('reasons')
+          .doc(reasonId)
+          .update({
+        'reason': reason,
+        'description': description,
+      });
+
+      loading = false;
+      update();
+      Get.snackbar(
+        "Success",
+        "Reason updated successfully",
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+    } catch (e) {
+      log('Error updating reason: $e');
+      loading = false;
+      update();
+      Get.snackbar(
+        "Error",
+        "Error updating reason",
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
+  }
+
 
 }

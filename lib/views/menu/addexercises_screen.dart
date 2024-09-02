@@ -1,11 +1,10 @@
+import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:motion_web/services/addexercisesservices.dart';
 import 'package:motion_web/utils/customcolor.dart';
-import 'package:motion_web/views/menu/addsubexercises_screen.dart';
 import 'package:motion_web/widgets/ElevatedButtonWidget.dart';
 import 'package:motion_web/widgets/networkimage_widget.dart';
 import 'package:motion_web/widgets/text_widget.dart';
@@ -19,6 +18,9 @@ class AddexErcisesScreen extends StatefulWidget {
 
 class _AddexErcisesScreenState extends State<AddexErcisesScreen> {
   final addexercisesservice = Get.put(AddExercisesServices());
+
+  bool isEditMode = false;
+  String? selectedDocId;
 
   Future<void> pickImage() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -50,62 +52,62 @@ class _AddexErcisesScreenState extends State<AddexErcisesScreen> {
                     onTap: pickImage,
                     child: addexercisesservice.imageFile == null
                         ? Container(
-                            height: 200,
-                            width: screenWidth * 0.30,
-                            margin: EdgeInsets.only(bottom: 10),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(15),
-                              border: Border.all(color: btncolor, width: 2),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.upload_file_outlined,
-                                      color: Colors.grey, size: 30),
-                                  AppText.normal("Upload the Exercise Image",
-                                      color: Colors.grey),
-                                ],
-                              ),
-                            ),
-                          )
+                      height: 200,
+                      width: screenWidth * 0.30,
+                      margin: EdgeInsets.only(bottom: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border.all(color: btncolor, width: 2),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.upload_file_outlined,
+                                color: Colors.grey, size: 30),
+                            AppText.normal("Upload the Exercise Image",
+                                color: Colors.grey),
+                          ],
+                        ),
+                      ),
+                    )
                         : Container(
-                            height: 200,
-                            width: screenWidth * 0.30,
-                            margin: EdgeInsets.only(bottom: 10),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(15),
-                              border: Border.all(color: btncolor, width: 2),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.upload_file_outlined,
-                                      color: btncolor, size: 30),
-                                  AppText.normal("Image Selected",
-                                      color: btncolor),
-                                ],
-                              ),
-                            ),
-                          )),
+                      height: 200,
+                      width: screenWidth * 0.30,
+                      margin: EdgeInsets.only(bottom: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border.all(color: btncolor, width: 2),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.upload_file_outlined,
+                                color: btncolor, size: 30),
+                            AppText.normal("Image Selected",
+                                color: btncolor),
+                          ],
+                        ),
+                      ),
+                    )
+                ),
                 SizedBox(height: 10),
                 Container(
                   width: screenWidth * 0.30,
                   child: TextField(
-                    // enabled: onboardingfirebase.check == true ? false : true,
                     maxLines: 1,
                     cursorColor: Colors.blue,
                     controller: addexercisesservice.exerciseController,
                     style:
-                        TextStyle(fontFamily: "PTSerif", color: Colors.black),
+                    TextStyle(fontFamily: "PTSerif", color: Colors.black),
                     decoration: InputDecoration(
                         contentPadding:
-                            EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+                        EdgeInsets.symmetric(horizontal: 18, vertical: 16),
                         hintText: 'Exercise Name',
                         hintStyle: TextStyle(
                           fontFamily: "PTSerif",
@@ -135,15 +137,14 @@ class _AddexErcisesScreenState extends State<AddexErcisesScreen> {
                 Container(
                   width: screenWidth * 0.30,
                   child: TextField(
-                    // enabled: onboardingfirebase.check == true ? false : true,
                     maxLines: 3,
                     cursorColor: Colors.blue,
                     controller: addexercisesservice.descriptionController,
                     style:
-                        TextStyle(fontFamily: "PTSerif", color: Colors.black),
+                    TextStyle(fontFamily: "PTSerif", color: Colors.black),
                     decoration: InputDecoration(
                         contentPadding:
-                            EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+                        EdgeInsets.symmetric(horizontal: 18, vertical: 16),
                         hintText: 'Description',
                         hintStyle: TextStyle(
                           fontFamily: "PTSerif",
@@ -173,38 +174,49 @@ class _AddexErcisesScreenState extends State<AddexErcisesScreen> {
                 GetBuilder<AddExercisesServices>(builder: (logic) {
                   return logic.loading == true
                       ? Center(
-                          child: SpinKitFadingCircle(
-                          size: 50,
-                          color: Colors.blue,
-                        ))
+                      child: SpinKitFadingCircle(
+                        size: 50,
+                        color: Colors.blue,
+                      ))
                       : ElevatedButtonWidget(
-                          buttonHeight: 50,
-                          buttonborderRadius: 15,
-                          buttonBackgroundColor: btncolor,
-                          buttonWidth: screenWidth * 0.30,
-                          onPressed: () async {
-                            if (addexercisesservice.imageFile == null ||
-                                addexercisesservice
-                                    .exerciseController.text.isEmpty ||
-                                addexercisesservice
-                                    .descriptionController.text.isEmpty) {
-                              Get.snackbar(
-                                "Error",
-                                "Fill all the fields",
-                                snackPosition: SnackPosition.TOP,
-                                backgroundColor: Colors.red,
-                                colorText: Colors.white,
-                              );
-                            } else {
-                              await addexercisesservice
-                                  .uploadImage(addexercisesservice.imageFile);
-
-                              setState(() {});
-                            }
-                          },
-                          child: AppText.heading("Save",
-                              fontsize: 18, color: Colors.white),
+                    buttonHeight: 50,
+                    buttonborderRadius: 15,
+                    buttonBackgroundColor: btncolor,
+                    buttonWidth: screenWidth * 0.30,
+                    onPressed: () async {
+                      if (addexercisesservice.imageFile == null ||
+                          addexercisesservice.exerciseController.text.isEmpty ||
+                          addexercisesservice.descriptionController.text.isEmpty) {
+                        Get.snackbar(
+                          "Error",
+                          "Fill all the fields",
+                          snackPosition: SnackPosition.TOP,
+                          backgroundColor: Colors.red,
+                          colorText: Colors.white,
                         );
+                      } else {
+                        if (isEditMode && selectedDocId != null) {
+                          // Update existing exercise
+                          await addexercisesservice.updateExercise(
+                            selectedDocId ?? "0",
+                            addexercisesservice.exerciseController.text,
+                            addexercisesservice.descriptionController.text,
+                            addexercisesservice.imageFile == Uint8List(0) ? null : addexercisesservice.imageFile,
+                          );
+                          setState(() {
+                            isEditMode = false;
+                            selectedDocId = null;
+                          });
+                        } else {
+                          await addexercisesservice.uploadImage(addexercisesservice.imageFile);
+                        }
+
+                        setState(() {});
+                      }
+                    },
+                    child: AppText.heading(isEditMode && selectedDocId != null ? "Update" :"Save",
+                        fontsize: 18, color: Colors.white),
+                  );
                 }),
               ],
             ),
@@ -240,7 +252,7 @@ class _AddexErcisesScreenState extends State<AddexErcisesScreen> {
 
                         return Container(
                           key: ValueKey(docId),
-                          height: 110,
+                         padding: EdgeInsets.all(10),
                           width: double.infinity,
                           margin: EdgeInsets.only(bottom: 10),
                           decoration: BoxDecoration(
@@ -249,10 +261,61 @@ class _AddexErcisesScreenState extends State<AddexErcisesScreen> {
                             border: Border.all(color: Colors.blue, width: 2),
                           ),
                           child: Padding(
-                            padding: const EdgeInsets.all(10.0),
+                            padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
                             child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () async {
+                                        setState(() {
+                                          addexercisesservice.exerciseController.text = exercise['exercise'];
+                                          addexercisesservice.descriptionController.text = exercise['description'];
+                                        });
+                                      },
+                                      child: Icon(Icons.refresh, color: Colors.blue, size: 20),
+                                    ),
+                                    SizedBox(width: 5),
+                                    GestureDetector(
+                                      onTap: () async {
+                                        setState(() {
+                                          isEditMode = true;
+                                          selectedDocId = docId;
+                                          addexercisesservice.imageFile = Uint8List(0);
+                                          addexercisesservice.exerciseController.text = exercise['exercise'];
+                                          addexercisesservice.descriptionController.text = exercise['description'];
+                                        });
+                                      },
+                                      child: Icon(Icons.edit, color: Colors.orange, size: 20),
+                                    ),
+                                    SizedBox(width: 5),
+                                    GetBuilder<AddExercisesServices>(
+                                      builder: (logic) {
+                                        return logic.loading1 == true
+                                            ? SpinKitFadingCircle(size: 20, color: Colors.blue)
+                                            : GestureDetector(
+                                          onTap: () async {
+                                            if (docId.isNotEmpty) {
+                                              await addexercisesservice.deleteExercise(docId);
+                                              setState(() {});
+                                            } else {
+                                              Get.snackbar(
+                                                "Error",
+                                                "Document ID is null or empty",
+                                                snackPosition: SnackPosition.TOP,
+                                                backgroundColor: Colors.red,
+                                                colorText: Colors.white,
+                                              );
+                                            }
+                                          },
+                                          child: Icon(Icons.delete, color: Colors.red, size: 20),
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
                                 Row(
                                   children: [
                                     NetworkImageWidget(
@@ -274,34 +337,7 @@ class _AddexErcisesScreenState extends State<AddexErcisesScreen> {
                                         ],
                                       ),
                                     ),
-                                    SizedBox(width: 10),
-                                    Padding(
-                                      padding: const EdgeInsets.only(bottom: 30),
-                                      child:  GetBuilder<AddExercisesServices>(
-                                        builder: (logic) {
-                                          return logic.loading1 == true
-                                              ? SpinKitFadingCircle(size: 20, color: Colors.blue)
-                                              : GestureDetector(
-                                            onTap: () async {
-                                              if (docId.isNotEmpty) {
-                                                await addexercisesservice.deleteExercise(docId);
-                                                setState(() {});
-                                              } else {
-                                                Get.snackbar(
-                                                  "Error",
-                                                  "Document ID is null or empty",
-                                                  snackPosition: SnackPosition.TOP,
-                                                  backgroundColor: Colors.red,
-                                                  colorText: Colors.white,
-                                                );
-                                              }
-                                            },
-                                            child: Icon(Icons.delete, color: Colors.red, size: 20),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                    SizedBox(width: 10),
+
                                   ],
                                 ),
                               ],
