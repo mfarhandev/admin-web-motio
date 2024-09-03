@@ -157,8 +157,8 @@ class _AddMotionsScreenState extends State<AddMotionsScreen> {
                   ),
                   SizedBox(height: 20),
                   GestureDetector(
-                      onTap: addMotionService.check == true && addMotionService.check1 == false  ? () {} : pickVideo,
-                      child: addMotionService.check == false && addMotionService.videoFile == null
+                      onTap: addMotionService.check == true && addMotionService.check1 == false && addMotionService.newvideoUrl != ''   ? () {} : pickVideo,
+                      child: addMotionService.check == false && addMotionService.videoFile == null && addMotionService.newvideoUrl == ''
                           ? Container(
                         height: 150,
                         width: screenWidth * 0.30,
@@ -484,7 +484,6 @@ class _AddMotionsScreenState extends State<AddMotionsScreen> {
                       onPressed: () async{
                         if (selectedExercise == null ||
                             selectedReason == null ||
-                            addMotionService.videoFile == null ||
                             addMotionService.titileController.text.isEmpty ||
                             addMotionService.equipementController.text.isEmpty ||
                             addMotionService.StartingpositionController.text.isEmpty ||
@@ -514,15 +513,31 @@ class _AddMotionsScreenState extends State<AddMotionsScreen> {
                             });
 
                           }else {
-                            await addMotionService.uploadVideo(
-                                addMotionService.videoFile,
-                                selectedExercise!,
-                                selectedReason!,
+                           if (addMotionService.newvideoUrl !=''){
+                             await addMotionService.addmotion(
+                               addMotionService.newvideoUrl,
+                               selectedExercise!,
+                               selectedReason!,
 
-                            );
-                            setState(() {
+                             );
+                             setState(() {
 
-                            });
+                             });
+
+                           }
+                           else {
+
+                             await addMotionService.uploadVideo(
+                               addMotionService.videoFile,
+                               selectedExercise!,
+                               selectedReason!,
+
+                             );
+                             setState(() {
+
+                             });
+                           }
+
                           }
 
                         }
@@ -586,6 +601,8 @@ class _AddMotionsScreenState extends State<AddMotionsScreen> {
                                           addMotionService.StartingpositionController.text = motion['starting_position'];
                                           addMotionService.header3Controller.text = motion['header3'];
                                           addMotionService.ExerciseDescriptionController.text = motion['exercise_description'];
+                                          addMotionService.newvideoUrl = motion['video_url'];
+
 
                                         });
                                       },

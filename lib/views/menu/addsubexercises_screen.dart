@@ -265,6 +265,7 @@ class _AddSubexercisesScreenState extends State<AddSubexercisesScreen> {
                                         setState(() {
                                           reasonController.text = reason;
                                           reasondescriptionController.text = description;
+
                                         });
                                       },
                                       child: Icon(Icons.refresh, color: Colors.blue, size: 20),

@@ -14,6 +14,8 @@ class AddMotionService extends GetxController {
   Uint8List? videoFile;
   bool loading = false;
 
+  String newvideoUrl = '';
+
   final TextEditingController titileController = TextEditingController();
   final TextEditingController header1Controller = TextEditingController();
   final TextEditingController header2Controller = TextEditingController();
@@ -76,6 +78,7 @@ class AddMotionService extends GetxController {
       loading = false;
       update();
       videoFile = null;
+      newvideoUrl = '';
       titileController.clear();
       header1Controller.clear();
       header2Controller.clear();
@@ -257,4 +260,84 @@ class AddMotionService extends GetxController {
       );
     }
   }
+
+
+  Future<void> addmotion(String video, String selectedExercise, String selectedReason) async {
+    loading = true;
+    update();
+
+    if (video == null) return;
+    try {
+      final docRef = FirebaseFirestore.instance.collection('motion_videos').doc();
+
+
+      // Fetch the current highest index
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('All_exercises')
+          .doc(selectedExercise)
+          .collection('reasons')
+          .doc(selectedReason)
+          .collection('motions')
+          .orderBy('index', descending: true)
+          .limit(1)
+          .get();
+
+      int newIndex = 0;
+      if (querySnapshot.docs.isNotEmpty) {
+        newIndex = querySnapshot.docs.first['index'] + 1;
+      }
+
+      await FirebaseFirestore.instance
+          .collection('All_exercises')
+          .doc(selectedExercise)
+          .collection('reasons')
+          .doc(selectedReason)
+          .collection('motions')
+          .doc(docRef.id)
+          .set({
+        'title': titileController.text,
+        'header1': header1Controller.text,
+        'header2': header2Controller.text,
+        'header3': header3Controller.text,
+        'equipmentsNeeded': equipementController.text,
+        'starting_position': StartingpositionController.text,
+        'exercise_description': ExerciseDescriptionController.text,
+        'video_url': video,
+        'index': newIndex,
+      });
+
+      loading = false;
+      update();
+      videoFile = null;
+      newvideoUrl = '';
+      titileController.clear();
+      header1Controller.clear();
+      header2Controller.clear();
+      header3Controller.clear();
+      equipementController.clear();
+      StartingpositionController.clear();
+      ExerciseDescriptionController.clear();
+
+      Get.snackbar(
+        "Success",
+        "Video uploaded successfully",
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+    } catch (e) {
+      loading = false;
+      update();
+      print('Error uploading video: $e');
+      Get.snackbar(
+        "Error",
+        "Error uploading video",
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
+  }
+
+
 }

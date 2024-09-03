@@ -19,6 +19,8 @@ class AddexErcisesScreen extends StatefulWidget {
 class _AddexErcisesScreenState extends State<AddexErcisesScreen> {
   final addexercisesservice = Get.put(AddExercisesServices());
 
+
+
   bool isEditMode = false;
   String? selectedDocId;
 
@@ -35,6 +37,8 @@ class _AddexErcisesScreenState extends State<AddexErcisesScreen> {
     }
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -49,8 +53,8 @@ class _AddexErcisesScreenState extends State<AddexErcisesScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 GestureDetector(
-                    onTap: pickImage,
-                    child: addexercisesservice.imageFile == null
+                    onTap: addexercisesservice.imageUrl == '' ? pickImage : () {},
+                    child: addexercisesservice.imageFile == null && addexercisesservice.imageUrl == ''
                         ? Container(
                       height: 200,
                       width: screenWidth * 0.30,
@@ -184,8 +188,7 @@ class _AddexErcisesScreenState extends State<AddexErcisesScreen> {
                     buttonBackgroundColor: btncolor,
                     buttonWidth: screenWidth * 0.30,
                     onPressed: () async {
-                      if (addexercisesservice.imageFile == null ||
-                          addexercisesservice.exerciseController.text.isEmpty ||
+                      if (addexercisesservice.exerciseController.text.isEmpty ||
                           addexercisesservice.descriptionController.text.isEmpty) {
                         Get.snackbar(
                           "Error",
@@ -208,7 +211,14 @@ class _AddexErcisesScreenState extends State<AddexErcisesScreen> {
                             selectedDocId = null;
                           });
                         } else {
-                          await addexercisesservice.uploadImage(addexercisesservice.imageFile);
+                          if(addexercisesservice.imageUrl  != ''){
+                            await addexercisesservice.addexercises(
+                              addexercisesservice.imageUrl,
+                            );
+                          }else {
+                            await addexercisesservice.uploadImage(addexercisesservice.imageFile);
+                          }
+
                         }
 
                         setState(() {});
@@ -273,6 +283,7 @@ class _AddexErcisesScreenState extends State<AddexErcisesScreen> {
                                         setState(() {
                                           addexercisesservice.exerciseController.text = exercise['exercise'];
                                           addexercisesservice.descriptionController.text = exercise['description'];
+                                          addexercisesservice.imageUrl = exercise['image_url'];
                                         });
                                       },
                                       child: Icon(Icons.refresh, color: Colors.blue, size: 20),

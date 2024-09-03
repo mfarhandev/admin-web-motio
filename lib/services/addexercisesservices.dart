@@ -1,11 +1,11 @@
 import 'dart:developer';
-import 'dart:html';
+
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:motion_web/utils/globals.dart';
+
 
 
 
@@ -16,6 +16,7 @@ class AddExercisesServices extends GetxController {
   TextEditingController descriptionController = TextEditingController();
 
   Uint8List? imageFile;
+  String imageUrl = '';
 
   bool loading = false;
   bool loading1 = false;
@@ -70,7 +71,7 @@ class AddExercisesServices extends GetxController {
       }
 
       final docRef = FirebaseFirestore.instance.collection('All_exercises').doc();
-      final imageUrl = await uploadToStorageImage(
+      final imageUrll = await uploadToStorageImage(
         fileData: imageFilee,
         folderName: "exercises_images/${docRef.id}",
         contentType: 'image/png',
@@ -79,13 +80,14 @@ class AddExercisesServices extends GetxController {
       await FirebaseFirestore.instance.collection('All_exercises').doc(docRef.id).set({
         'exercise': exerciseController.text,
         'description': descriptionController.text,
-        'image_url': imageUrl,
+        'image_url': imageUrll,
         'index': newIndex,
       });
 
       exerciseController.clear();
       descriptionController.clear();
       imageFile = null;
+      imageUrl = '';
       loading = false;
       update();
 
@@ -111,6 +113,63 @@ class AddExercisesServices extends GetxController {
   }
 
 
+  Future<void> addexercises(String image) async {
+    if (image == null)
+      return;
+
+    loading = true;
+    update();
+
+    try {
+      // Fetch the current highest index
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('All_exercises')
+          .orderBy('index', descending: true)
+          .limit(1)
+          .get();
+
+      int newIndex = 0;
+      if (querySnapshot.docs.isNotEmpty) {
+        newIndex = querySnapshot.docs.first['index'] + 1;
+      }
+
+      final docRef = FirebaseFirestore.instance.collection('All_exercises').doc();
+
+
+      await FirebaseFirestore.instance.collection('All_exercises').doc(docRef.id).set({
+        'exercise': exerciseController.text,
+        'description': descriptionController.text,
+        'image_url': image,
+        'index': newIndex,
+      });
+
+      exerciseController.clear();
+      descriptionController.clear();
+      imageFile = null;
+      imageUrl = '';
+      loading = false;
+      update();
+
+      Get.snackbar(
+        "Success",
+        "Exercise uploaded successfully",
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+    } catch (e) {
+      log('Error uploading image: $e');
+      loading = false;
+      update();
+      Get.snackbar(
+        "Error",
+        "Error uploading exercise",
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
+  }
 
 
   Future<List<Map<String, dynamic>>> getAllExercises() async {
@@ -238,6 +297,25 @@ class AddExercisesServices extends GetxController {
       );
     }
   }
+
+
+
+
+  // Future<Uint8List?> getImageFileFromFirestore(String docId) async {
+  //   try {
+  //     DocumentSnapshot docSnapshot = await FirebaseFirestore.instance.collection('All_exercises').doc(docId).get();
+  //     if (!docSnapshot.exists) {
+  //       print('Document does not exist');
+  //       return null;
+  //     }
+  //
+  //     String imageUrl = docSnapshot['image_url'];
+  //     return await fetchImageAsUint8List(imageUrl);
+  //   } catch (e) {
+  //     print('Error fetching image from Firestore: $e');
+  //     return null;
+  //   }
+  // }
 
 
 }
